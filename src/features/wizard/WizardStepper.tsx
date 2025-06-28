@@ -1,133 +1,217 @@
+'use client'
+
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/shared/Badge'
 import { useWizard } from './useWizard'
 
-const steps = [
-  { id: 1, title: 'Personal Information', description: 'Basic details and background' },
-  { id: 2, title: 'Education', description: 'Academic qualifications' },
-  { id: 3, title: 'Experience', description: 'Work experience and skills' },
-  { id: 4, title: 'Documents', description: 'Upload required documents' },
-  { id: 5, title: 'Review', description: 'Review and submit application' }
-]
-
 export function WizardStepper() {
-  const { currentStep, nextStep, prevStep, formData, updateFormData } = useWizard()
+  const { 
+    currentStep, 
+    nextStep, 
+    prevStep, 
+    formData, 
+    updateFormData,
+    wizardTree,
+    currentSection,
+    isLoading,
+    error,
+    isFirstStep,
+    isLastStep,
+    progress
+  } = useWizard()
+
+  const [localAnswers, setLocalAnswers] = useState<Record<string, any>>({})
+
+  // Handle input changes with autosave
+  const handleInputChange = (questionId: string, value: any) => {
+    setLocalAnswers(prev => ({ ...prev, [questionId]: value }))
+    updateFormData(questionId, value)
+  }
+
+  // Render different question types
+  const renderQuestion = (question: any) => {
+    const value = localAnswers[question.id] || formData[question.id] || ''
+
+    switch (question.type) {
+      case 'text':
+        return (
+          <input
+            type="text"
+            className="w-full p-2 border rounded-md"
+            placeholder={`Enter ${question.question.toLowerCase()}`}
+            value={value}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
+          />
+        )
+
+      case 'single_choice':
+        return (
+          <select
+            className="w-full p-2 border rounded-md"
+            value={value}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
+          >
+            <option value="">Select an option</option>
+            {question.options?.map((option: any, idx: number) => {
+              // Handle both string options and object options
+              const optionValue = typeof option === 'string' ? option : option.value
+              const optionLabel = typeof option === 'string' ? option : option.label
+              
+              return (
+                <option key={idx} value={optionValue}>
+                  {optionLabel}
+                </option>
+              )
+            })}
+          </select>
+        )
+
+      case 'yes_no':
+        return (
+          <div className="flex gap-4">
+            {['Yes', 'No'].map((option) => (
+              <label key={option} className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  name={question.id}
+                  value={option}
+                  checked={value === option}
+                  onChange={(e) => handleInputChange(question.id, e.target.value)}
+                />
+                {option}
+              </label>
+            ))}
+          </div>
+        )
+
+      case 'date':
+        return (
+          <input
+            type="date"
+            className="w-full p-2 border rounded-md"
+            value={value}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
+          />
+        )
+
+      default:
+        return (
+          <input
+            type="text"
+            className="w-full p-2 border rounded-md"
+            placeholder={`Enter ${question.question.toLowerCase()}`}
+            value={value}
+            onChange={(e) => handleInputChange(question.id, e.target.value)}
+          />
+        )
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <span className="ml-3">Loading wizard...</span>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <div className="text-red-600 mb-4">
+          <h3 className="text-lg font-medium">Error loading wizard</h3>
+          <p className="text-sm">{error}</p>
+        </div>
+        <Button onClick={() => window.location.reload()}>
+          Retry
+        </Button>
+      </div>
+    )
+  }
+
+  if (!wizardTree || !currentSection) {
+    return (
+      <div className="text-center py-12 text-gray-500">
+        <p>No wizard data available</p>
+      </div>
+    )
+  }
+
+  const sections = wizardTree.sections
 
   return (
     <div className="space-y-8">
       {/* Progress indicator */}
       <div className="flex items-center justify-between">
-        {steps.map((step, index) => (
-          <div key={step.id} className="flex items-center">
+        {sections.map((section, index) => (
+          <div key={section.id} className="flex items-center">
             <div className={`flex items-center justify-center w-8 h-8 rounded-full ${
-              step.id <= currentStep 
+              index + 1 <= currentStep 
                 ? 'bg-primary text-primary-foreground' 
                 : 'bg-gray-200 text-gray-600'
             }`}>
-              {step.id}
+              {index + 1}
             </div>
             <div className="ml-2 hidden sm:block">
-              <div className="text-sm font-medium">{step.title}</div>
-              <div className="text-xs text-gray-500">{step.description}</div>
+              <div className="text-sm font-medium">{section.title}</div>
+              <div className="text-xs text-gray-500">{section.description}</div>
             </div>
-            {index < steps.length - 1 && (
+            {index < sections.length - 1 && (
               <div className={`w-12 h-0.5 mx-4 ${
-                step.id < currentStep ? 'bg-primary' : 'bg-gray-200'
+                index + 1 < currentStep ? 'bg-primary' : 'bg-gray-200'
               }`} />
             )}
           </div>
         ))}
       </div>
 
+      {/* Progress bar */}
+      <div className="w-full bg-gray-200 rounded-full h-2">
+        <div 
+          className="bg-primary h-2 rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        ></div>
+      </div>
+
       {/* Step content */}
       <Card>
         <CardHeader>
           <CardTitle>
-            Step {currentStep}: {steps[currentStep - 1]?.title}
+            Step {currentStep}: {currentSection.title}
           </CardTitle>
           <CardDescription>
-            {steps[currentStep - 1]?.description}
+            {currentSection.description}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          {currentStep === 1 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Full Name</label>
-                <input 
-                  type="text" 
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Email</label>
-                <input 
-                  type="email" 
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Enter your email"
-                />
-              </div>
+          {/* Render current section questions */}
+          {currentSection.questions.map((question) => (
+            <div key={question.id} className="space-y-2">
+              <label className="block text-sm font-medium">
+                {question.question}
+                {question.required && <span className="text-red-500 ml-1">*</span>}
+              </label>
+              {renderQuestion(question)}
             </div>
-          )}
-
-          {currentStep === 2 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Highest Education</label>
-                <select className="w-full p-2 border rounded-md">
-                  <option value="">Select education level</option>
-                  <option value="bachelors">Bachelor's Degree</option>
-                  <option value="masters">Master's Degree</option>
-                  <option value="phd">PhD</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {currentStep === 3 && (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Years of Experience</label>
-                <input 
-                  type="number" 
-                  className="w-full p-2 border rounded-md"
-                  placeholder="Enter years of experience"
-                />
-              </div>
-            </div>
-          )}
-
-          {currentStep === 4 && (
-            <div className="space-y-4">
-              <p>Upload your required documents here.</p>
-              <Badge variant="info">Document upload functionality coming soon</Badge>
-            </div>
-          )}
-
-          {currentStep === 5 && (
-            <div className="space-y-4">
-              <p>Please review your application before submitting.</p>
-              <Badge variant="success">All steps completed!</Badge>
-            </div>
-          )}
+          ))}
 
           {/* Navigation buttons */}
           <div className="flex justify-between pt-6">
             <Button 
               variant="outline" 
               onClick={prevStep}
-              disabled={currentStep === 1}
+              disabled={isFirstStep}
             >
               Previous
             </Button>
             <Button 
               onClick={nextStep}
-              disabled={currentStep === steps.length}
+              disabled={isLastStep}
             >
-              {currentStep === steps.length ? 'Submit' : 'Next'}
+              {isLastStep ? 'Complete' : 'Next'}
             </Button>
           </div>
         </CardContent>
