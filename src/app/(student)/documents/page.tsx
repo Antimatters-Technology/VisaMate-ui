@@ -1,9 +1,14 @@
+'use client'
+
 import { UploadDropzone } from '@/features/documents/UploadDropzone'
 import { DocumentsList } from '@/features/documents/DocumentsList'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useWizard } from '@/features/wizard/useWizard'
 
 export default function DocumentsPage() {
+  // Initialize wizard session for document uploads
+  const { sessionId, isLoading } = useWizard()
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -27,7 +32,18 @@ export default function DocumentsPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <UploadDropzone />
+                {isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="text-gray-500">Initializing session...</div>
+                  </div>
+                ) : (
+                  <UploadDropzone 
+                    onUploadComplete={(files) => {
+                      console.log('Files uploaded:', files)
+                      // Files are automatically added to the documents store
+                    }}
+                  />
+                )}
               </CardContent>
             </Card>
           </div>

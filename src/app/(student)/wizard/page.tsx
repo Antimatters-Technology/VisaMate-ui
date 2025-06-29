@@ -20,7 +20,7 @@ export default function WizardPage() {
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Main wizard */}
           <div className="lg:col-span-2">
-            <WizardStepper />
+        <WizardStepper />
           </div>
           
           {/* Document checklist sidebar */}

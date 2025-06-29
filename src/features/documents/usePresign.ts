@@ -31,12 +31,24 @@ export function usePresign() {
     setIsUploading(true)
     
     try {
+      // Validate session ID is available
+      if (!sessionId) {
+        throw new Error('No active session. Please refresh the page and try again.')
+      }
+
+      console.log('Starting upload for file:', {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        sessionId: sessionId
+      })
+
       // Step 1: Get presigned URL from backend
       const initResponse = await api.post('/documents/init', {
-        filename: file.name,
+        file_name: file.name, // Fixed: backend expects 'file_name', not 'filename'
         content_type: file.type,
-        size: file.size,
-        category: 'other', // Default category, can be made dynamic
+        file_size: file.size, // Fixed: backend expects 'file_size', not 'size'
+        document_type: 'other', // Fixed: backend expects 'document_type', not 'category'
         session_id: sessionId // Include session ID for tracking
       })
 
@@ -97,14 +109,23 @@ export function usePresign() {
         throw new Error(`S3 upload failed: ${uploadResponse.status} ${uploadResponse.statusText}. Details: ${errorText}`)
       }
 
+      console.log('S3 upload successful, marking as complete...')
+
       // Step 4: Mark upload as complete in backend
       await api.post('/documents/upload-complete', {
-        document_id: document_id
+        document_id: document_id,
+        file_size: file.size // Backend also requires file_size
       })
 
       // Step 5: Update document status to completed
       updateDocument(document_id, {
         status: 'completed',
+        url: uploadResponse.url || upload_url
+      })
+
+      console.log('Upload complete:', {
+        id: document_id,
+        name: file.name,
         url: uploadResponse.url || upload_url
       })
 
@@ -118,16 +139,29 @@ export function usePresign() {
       }
 
     } catch (error: any) {
-      console.error('Upload failed:', error)
+      console.error('Upload failed:', {
+        error: error,
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status,
+        sessionId: sessionId
+      })
       
       // Update document status to failed if we had added it optimistically
       if (error.document_id) {
         updateDocument(error.document_id, { status: 'failed' })
       }
 
+      let errorMessage = 'Upload failed'
+      if (error.response?.data?.detail) {
+        errorMessage = error.response.data.detail
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+
       return {
         success: false,
-        error: error.response?.data?.detail || error.message || 'Upload failed'
+        error: errorMessage
       }
     } finally {
       setIsUploading(false)
