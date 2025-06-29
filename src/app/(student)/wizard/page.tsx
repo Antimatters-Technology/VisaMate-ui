@@ -1,5 +1,6 @@
 import { WizardStepper } from '@/features/wizard/WizardStepper'
 import { DocumentChecklist } from '@/features/wizard/DocumentChecklist'
+import { CompletionBanner } from '@/features/documents/CompletionBanner'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -37,6 +38,15 @@ export default function WizardPage() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        {/* Completion Banner */}
+        <div className="mt-8">
+          <CompletionBanner
+            title="Wizard Complete? Get Expert Review!"
+            subtitle="Now ensure your application is perfect with expert validation and 100% IRCC compliance."
+            buttonText="Complete Application Review - $149 CAD"
+          />
         </div>
       </div>
     </div>

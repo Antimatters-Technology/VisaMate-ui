@@ -32,6 +32,12 @@ export function Header() {
             >
               Status
             </Link>
+            <Link
+              href="/payment"
+              className="transition-colors hover:bg-blue-700 flex items-center gap-1 bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium"
+            >
+              🚀 Complete Application
+            </Link>
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">

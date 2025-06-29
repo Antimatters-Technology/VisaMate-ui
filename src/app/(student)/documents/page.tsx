@@ -2,13 +2,20 @@
 
 import { UploadDropzone } from '@/features/documents/UploadDropzone'
 import { DocumentsList } from '@/features/documents/DocumentsList'
+import { CompletionBanner } from '@/features/documents/CompletionBanner'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWizard } from '@/features/wizard/useWizard'
+import { useDocuments } from '@/stores/documents'
 
 export default function DocumentsPage() {
   // Initialize wizard session for document uploads
   const { sessionId, isLoading } = useWizard()
+  const { documents } = useDocuments()
+  
+  // Check if user has uploaded documents
+  const hasUploadedDocuments = documents.length > 0
+  const completedDocuments = documents.filter(doc => doc.status === 'completed').length
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -62,6 +69,13 @@ export default function DocumentsPage() {
             </Card>
           </div>
         </div>
+
+        {/* Completion CTA - Show when documents are uploaded */}
+        {hasUploadedDocuments && (
+          <div className="mt-8">
+            <CompletionBanner />
+          </div>
+        )}
       </div>
     </div>
   )
