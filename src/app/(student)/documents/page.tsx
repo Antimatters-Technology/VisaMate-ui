@@ -3,6 +3,7 @@
 import { UploadDropzone } from '@/features/documents/UploadDropzone'
 import { DocumentsList } from '@/features/documents/DocumentsList'
 import { CompletionBanner } from '@/features/documents/CompletionBanner'
+import { WhatsAppSetup } from '@/features/whatsapp/WhatsAppSetup'
 import { Header } from '@/components/layout/Header'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { useWizard } from '@/features/wizard/useWizard'
@@ -27,6 +28,11 @@ export default function DocumentsPage() {
           <p className="text-gray-600">
             Upload and manage your visa application documents.
           </p>
+        </div>
+
+        {/* WhatsApp Upload Option */}
+        <div className="mb-8">
+          <WhatsAppSetup sessionId={sessionId || undefined} />
         </div>
         
         <div className="grid lg:grid-cols-3 gap-8">
