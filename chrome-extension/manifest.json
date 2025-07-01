@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "VisaMate Assistant",
+  "version": "1.0.0",
+  "description": "Your AI-powered visa application companion with auto-fill capabilities",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://*.cic.gc.ca/*",
+    "https://*.homeaffairs.gov.au/*",
+    "https://*.gov.uk/*",
+    "https://api.visamate.com/*",
+    "http://localhost:8000/*",
+    "https://*.s3.amazonaws.com/*",
+    "https://*.amazonaws.com/*",
+    "file://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup-simple.html",
+    "default_title": "VisaMate Assistant"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.cic.gc.ca/*",
+        "https://*.homeaffairs.gov.au/*",
+        "https://*.gov.uk/*",
+        "http://localhost/*",
+        "file://*/*"
+      ],
+      "js": ["content.js"],
+      "css": ["content.css"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["helper-panel.html", "icons/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+} 

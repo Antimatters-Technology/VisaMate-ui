@@ -1,0 +1,87 @@
+/* VisaMate Chrome Extension Content Styles */
+
+#visamate-helper-panel {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  z-index: 2147483647 !important;
+}
+
+#visamate-helper-panel * {
+  box-sizing: border-box !important;
+}
+
+#visamate-helper-panel button {
+  transition: all 0.2s ease !important;
+}
+
+#visamate-helper-panel button:hover:not(:disabled) {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
+#visamate-helper-panel button:active {
+  transform: translateY(0) !important;
+}
+
+#visamate-helper-panel input[type="checkbox"] {
+  accent-color: #2563eb !important;
+}
+
+/* Animation for progress bar */
+#progress-bar {
+  transition: width 0.5s ease-in-out !important;
+}
+
+/* Highlight for filled fields */
+.visamate-filled {
+  border: 2px solid #16a34a !important;
+  background-color: #f0fdf4 !important;
+}
+
+/* Error field highlighting */
+.visamate-error {
+  border: 2px solid #ef4444 !important;
+  background-color: #fef2f2 !important;
+}
+
+/* Autofill animation */
+@keyframes visamate-fill {
+  0% {
+    background-color: #dbeafe;
+  }
+  50% {
+    background-color: #2563eb;
+  }
+  100% {
+    background-color: white;
+  }
+}
+
+.visamate-filling {
+  animation: visamate-fill 0.8s ease-in-out !important;
+}
+
+/* Floating helper panel responsive adjustments */
+@media (max-width: 768px) {
+  #visamate-helper-panel > div {
+    right: 10px !important;
+    top: 10px !important;
+    min-width: 280px !important;
+    max-width: calc(100vw - 20px) !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  #visamate-helper-panel > div {
+    background: #1f2937 !important;
+    border-color: #374151 !important;
+    color: #f9fafb !important;
+  }
+  
+  #visamate-helper-panel input[type="text"],
+  #visamate-helper-panel input[type="password"] {
+    background: #374151 !important;
+    border-color: #4b5563 !important;
+    color: #f9fafb !important;
+  }
+} 
