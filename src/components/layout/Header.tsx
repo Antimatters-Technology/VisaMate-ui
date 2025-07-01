@@ -3,8 +3,28 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/shared/Badge'
+import { useAuth } from 'react-oidc-context'
 
 export function Header() {
+  const auth = useAuth()
+  const isAuth = auth.isAuthenticated
+
+  const handleSignOut = () => {
+    auth.removeUser()
+  }
+  const handleSignIn = () => {
+    console.log('Sign in clicked, auth state:', { 
+      isAuthenticated: auth.isAuthenticated, 
+      isLoading: auth.isLoading, 
+      error: auth.error 
+    })
+    
+    try {
+      auth.signinRedirect()
+    } catch (error) {
+      console.error('Error during sign in redirect:', error)
+    }
+  }
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
@@ -51,12 +71,20 @@ export function Header() {
             {/* Search component would go here */}
           </div>
           <nav className="flex items-center space-x-2">
-            <Button variant="ghost" size="sm">
-              Sign In
-            </Button>
-            <Button size="sm">
-              Get Started
-            </Button>
+            {isAuth ? (
+              <Button variant="ghost" size="sm" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            ) : (
+              <Button variant="ghost" size="sm" onClick={handleSignIn}>
+                Sign In
+              </Button>
+            )}
+            {!isAuth && (
+              <Button size="sm" onClick={handleSignIn}>
+                Get Started
+              </Button>
+            )}
           </nav>
         </div>
       </div>

@@ -44,7 +44,9 @@
     "tailwindcss-animate": "^1.0.7",
     "twilio": "^5.7.1",
     "ws": "^8.14.0",
-    "zustand": "^4.5.7"
+    "zustand": "^4.5.7",
+    "oidc-client-ts": "^3.3.0",
+    "react-oidc-context": "^3.3.0"
   },
   "devDependencies": {
     "@types/ws": "^8.5.0",
