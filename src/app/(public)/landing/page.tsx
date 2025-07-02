@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/Header'
 import { Badge } from '@/components/shared/Badge'
+import { AuthButton } from '@/components/auth/AuthButton'
 
 export default function LandingPage() {
   return (
@@ -22,12 +23,12 @@ export default function LandingPage() {
             Get expert guidance for Canada, Australia, UK, and more.
           </p>
           <div className="flex gap-4 justify-center">
-            <Button size="lg" className="px-8">
+            <AuthButton variant="signin" className="px-8 text-lg h-12">
               Start Your Application
-            </Button>
-            <Button variant="outline" size="lg">
-              Consult an Expert
-            </Button>
+            </AuthButton>
+            <AuthButton variant="signup" className="px-8 text-lg h-12">
+              Create Account
+            </AuthButton>
           </div>
         </div>
       </section>
