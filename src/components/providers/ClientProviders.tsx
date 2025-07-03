@@ -3,7 +3,7 @@
 import { WSProvider } from '@/libs/ws'
 import { Toaster } from '@/components/ui/toaster'
 import { I18nProvider } from '@/libs/i18n'
-import { CognitoProvider } from './CognitoProvider'
+import { AuthProvider } from '@/contexts/AuthContext'
 
 interface ClientProvidersProps {
   children: React.ReactNode
@@ -11,13 +11,13 @@ interface ClientProvidersProps {
 
 export function ClientProviders({ children }: ClientProvidersProps) {
   return (
-    <CognitoProvider>
-      <I18nProvider>
+    <I18nProvider>
+      <AuthProvider>
         <WSProvider>
           {children}
           <Toaster />
         </WSProvider>
-      </I18nProvider>
-    </CognitoProvider>
+      </AuthProvider>
+    </I18nProvider>
   )
 } 

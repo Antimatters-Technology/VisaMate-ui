@@ -87,7 +87,7 @@ export function MagicLinkHandler({ token }: MagicLinkHandlerProps) {
           if (userRole === 'consultant') {
             router.push('/cases')
           } else {
-            router.push('/wizard')
+            router.push('/documents')
           }
         }, 2000)
       } else {

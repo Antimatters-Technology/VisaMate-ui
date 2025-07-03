@@ -76,7 +76,6 @@ function ConsultantCard({ consultant }: { consultant: typeof mockConsultants[0] 
       consultancy: consultant.name
     })
     createApplication()
-    alert(`✅ Success! Your profile has been added to ${consultant.name}'s dashboard. They will contact you within 24 hours.`)
   }
 
   return (

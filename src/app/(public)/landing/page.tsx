@@ -1,10 +1,41 @@
+'use client'
+
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Header } from '@/components/layout/Header'
 import { Badge } from '@/components/shared/Badge'
-import { AuthButton } from '@/components/auth/AuthButton'
+import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 
 export default function LandingPage() {
+  const { isAuthenticated, signIn, signUp } = useAuth()
+  const router = useRouter()
+
+  const handleStartApplication = () => {
+    if (isAuthenticated) {
+      router.push('/documents')
+    } else {
+      try {
+        signIn()
+        // The page will redirect to Cognito, then back to callback, then to dashboard
+      } catch (err) {
+        console.error('Sign in failed:', err)
+      }
+    }
+  }
+
+  const handleCreateAccount = () => {
+    if (isAuthenticated) {
+      router.push('/documents')
+    } else {
+      try {
+        signUp()
+        // The page will redirect to Cognito signup
+      } catch (err) {
+        console.error('Sign up failed:', err)
+      }
+    }
+  }
   return (
     <div className="min-h-screen">
       <Header />
@@ -23,12 +54,20 @@ export default function LandingPage() {
             Get expert guidance for Canada, Australia, UK, and more.
           </p>
           <div className="flex gap-4 justify-center">
-            <AuthButton variant="signin" className="px-8 text-lg h-12">
-              Start Your Application
-            </AuthButton>
-            <AuthButton variant="signup" className="px-8 text-lg h-12">
-              Create Account
-            </AuthButton>
+            <Button 
+              variant="default" 
+              className="px-8 text-lg h-12"
+              onClick={handleStartApplication}
+            >
+              {isAuthenticated ? 'Continue Application' : 'Start Your Application'}
+            </Button>
+            <Button 
+              variant="outline" 
+              className="px-8 text-lg h-12"
+              onClick={handleCreateAccount}
+            >
+              {isAuthenticated ? 'Go to Documents' : 'Create Account'}
+            </Button>
           </div>
         </div>
       </section>
