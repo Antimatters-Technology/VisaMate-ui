@@ -95,7 +95,7 @@ export function Header() {
                   disabled={isSigningIn || isLoading}
                 >
                   {isSigningIn ? 'Signing In...' : 'Sign In'}
-                </Button>
+            </Button>
                 <Button 
                   variant="outline" 
                   className="h-8 px-3 text-sm"
@@ -103,7 +103,7 @@ export function Header() {
                   disabled={isSigningUp || isLoading}
                 >
                   {isSigningUp ? 'Signing Up...' : 'Sign Up'}
-                </Button>
+            </Button>
               </>
             )}
           </nav>

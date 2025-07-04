@@ -13,10 +13,10 @@ export function ClientProviders({ children }: ClientProvidersProps) {
   return (
     <I18nProvider>
       <AuthProvider>
-        <WSProvider>
-          {children}
-          <Toaster />
-        </WSProvider>
+      <WSProvider>
+        {children}
+        <Toaster />
+      </WSProvider>
       </AuthProvider>
     </I18nProvider>
   )
