@@ -3,37 +3,295 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VisaMate Assistant</title>
+  <title>IRCC Autofill Helper</title>
   <style>
     body {
+      width: 400px;
+      min-height: 500px;
       margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: white;
+      padding: 20px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 14px;
+      line-height: 1.4;
+      background: #f8f9fa;
     }
     
-    * {
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e9ecef;
+    }
+    
+    .header h1 {
+      margin: 0;
+      color: #1a73e8;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .header p {
+      margin: 5px 0 0 0;
+      color: #5f6368;
+      font-size: 12px;
+    }
+    
+    .status {
+      padding: 10px 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .status.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .btn {
+      flex: 1;
+      padding: 12px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: #1a73e8;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #1557b0;
+    }
+    
+    .btn-secondary {
+      background: #f8f9fa;
+      color: #3c4043;
+      border: 1px solid #dadce0;
+    }
+    
+    .btn-secondary:hover {
+      background: #e8f0fe;
+    }
+    
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+      color: #3c4043;
+    }
+    
+    .form-group textarea {
+      width: 100%;
+      min-height: 200px;
+      padding: 10px;
+      border: 1px solid #dadce0;
+      border-radius: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      resize: vertical;
       box-sizing: border-box;
     }
     
-    input:focus,
-    button:focus {
-      outline: 2px solid #2563eb;
-      outline-offset: 2px;
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
     }
     
-    button:hover:not(:disabled) {
-      opacity: 0.9;
+    .stats {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #dadce0;
+      margin-bottom: 15px;
     }
     
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .stats h3 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #3c4043;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      padding: 8px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+    
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a73e8;
+    }
+    
+    .stat-label {
+      font-size: 11px;
+      color: #5f6368;
+      margin-top: 2px;
+    }
+    
+    .instructions {
+      background: white;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #dadce0;
+      font-size: 12px;
+      color: #5f6368;
+      line-height: 1.5;
+    }
+    
+    .auto-mode-info {
+      background: #e8f5e8;
+      padding: 12px;
+      border-radius: 6px;
+      border: 1px solid #c3e6cb;
+      margin-bottom: 15px;
+      font-size: 12px;
+      color: #155724;
+    }
+    
+    .auto-mode-info p {
+      margin: 0;
+      line-height: 1.4;
+    }
+    
+    .instructions h4 {
+      margin: 0 0 8px 0;
+      color: #3c4043;
+      font-size: 13px;
+    }
+    
+    .instructions ol {
+      margin: 8px 0;
+      padding-left: 16px;
+    }
+    
+    .instructions li {
+      margin-bottom: 4px;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .loading {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #1a73e8;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-right: 8px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
-  <div id="root"></div>
+  <div class="header">
+    <h1>IRCC Autofill Helper</h1>
+    <p>Automatically fill IRCC eligibility questionnaire</p>
+  </div>
+  
+  <div id="status" class="status hidden"></div>
+  
+  <div class="btn-group">
+    <button id="autofillBtn" class="btn btn-primary">
+      <span id="autofillText">🚀 Manual Fill</span>
+    </button>
+    <button id="settingsBtn" class="btn btn-secondary">⚙️ Settings</button>
+  </div>
+  
+  <div class="auto-mode-info">
+    <p><strong>🤖 Auto Mode:</strong> The extension automatically fills forms when you visit the IRCC questionnaire page. Use the button above for manual triggering if needed.</p>
+  </div>
+  
+  <div class="stats">
+    <h3>📊 Current Configuration</h3>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" id="questionCount">32</div>
+        <div class="stat-label">Questions</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="lastFilled">0</div>
+        <div class="stat-label">Last Filled</div>
+      </div>
+    </div>
+  </div>
+  
+  <div id="settingsPanel" class="hidden">
+    <div class="form-group">
+      <label for="answersJson">Edit Answers (JSON Format):</label>
+      <textarea id="answersJson" placeholder="Loading answers..."></textarea>
+    </div>
+    
+    <div class="btn-group">
+      <button id="saveBtn" class="btn btn-primary">💾 Save</button>
+      <button id="resetBtn" class="btn btn-secondary">🔄 Reset</button>
+    </div>
+  </div>
+  
+  <div class="instructions">
+    <h4>📝 How to use:</h4>
+    <ol>
+      <li>Navigate to <strong>onlineservices-servicesenligne.cic.gc.ca/eapp/eapp</strong></li>
+      <li>Start the eligibility questionnaire</li>
+      <li><strong>Forms fill automatically!</strong> No button click needed</li>
+      <li>Use "Manual Fill" if auto-mode doesn't trigger</li>
+      <li>Review answers and proceed with your application</li>
+    </ol>
+    
+    <h4>🔧 Customization:</h4>
+    <p>Click "Settings" to modify the pre-configured answers. The answers are stored locally and will persist across browser sessions.</p>
+  </div>
+  
   <script src="popup.js"></script>
 </body>
 </html> 

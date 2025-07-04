@@ -17,7 +17,9 @@ import {
   ArrowRight,
   Eye,
   MessageSquare,
-  Users
+  Users,
+  X,
+  CheckCircle
 } from 'lucide-react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -174,39 +176,9 @@ const mockKanbanData: KanbanColumn[] = [
   {
     id: 'submitted',
     title: 'Submitted to IRCC',
-    count: 2,
+    count: 0,
     color: 'bg-green-50 border-green-200',
-    applications: [
-      {
-        id: 7,
-        student_name: 'Neha Agarwal',
-        student_email: 'neha.agarwal@gmail.com',
-        phone: '+91 9876543216',
-        program: 'Master\'s in Data Science',
-        institution: 'University of British Columbia',
-        target_intake: 'Fall 2024',
-        priority: 'high',
-        created_at: '2024-01-20T10:00:00Z',
-        updated_at: '2024-02-12T11:30:00Z',
-        ielts_score: 7.5,
-        consultant_notes: 'Application submitted successfully. Tracking number: IMM2024-789456',
-        progress_percentage: 100
-      },
-      {
-        id: 8,
-        student_name: 'Rohit Verma',
-        student_email: 'rohit.verma@gmail.com',
-        phone: '+91 9876543217',
-        program: 'Diploma in Hospitality',
-        institution: 'George Brown College',
-        target_intake: 'Summer 2024',
-        priority: 'medium',
-        created_at: '2024-01-25T12:00:00Z',
-        updated_at: '2024-02-10T16:45:00Z',
-        ielts_score: 6.0,
-        progress_percentage: 100
-      }
-    ]
+    applications: []
   }
 ]
 
@@ -220,79 +192,238 @@ function getPriorityColor(priority: string) {
 }
 
 function ApplicationCard({ application }: { application: ApplicationCard }) {
+  const [showESignModal, setShowESignModal] = useState(false)
   return (
-    <Card className="mb-3 cursor-pointer hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="flex items-start justify-between mb-3">
-          <div className="flex-1">
-            <div className="flex items-center gap-2 mb-1">
-              <User className="w-4 h-4 text-gray-500" />
-              <h4 className="font-semibold text-sm">{application.student_name}</h4>
+    <div className="relative">
+      <Card className="mb-3 cursor-pointer hover:shadow-md transition-shadow">
+        <CardContent className="p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <User className="w-4 h-4 text-gray-500" />
+                <h4 className="font-semibold text-sm">{application.student_name}</h4>
+              </div>
+              <p className="text-xs text-gray-600 mb-2">{application.program}</p>
+              <p className="text-xs text-gray-500">{application.institution}</p>
             </div>
-            <p className="text-xs text-gray-600 mb-2">{application.program}</p>
-            <p className="text-xs text-gray-500">{application.institution}</p>
-          </div>
-          <div className="flex flex-col items-end gap-1">
-            <Badge className={getPriorityColor(application.priority)}>
-              {application.priority.toUpperCase()}
-            </Badge>
-            {application.ielts_score && (
-              <span className="text-xs text-blue-600 font-medium">
-                IELTS: {application.ielts_score}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-gray-500">Intake: {application.target_intake}</span>
-            <span className="text-gray-500">{formatDateSafe(application.created_at)}</span>
-          </div>
-
-          {application.progress_percentage > 0 && (
-            <div className="space-y-1">
-              <div className="flex justify-between text-xs">
-                <span className="text-gray-600">Progress</span>
-                <span className="text-gray-600">{application.progress_percentage}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1.5">
-                <div 
-                  className="bg-blue-600 h-1.5 rounded-full transition-all"
-                  style={{ width: `${application.progress_percentage}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {application.next_action && (
-            <div className="bg-blue-50 p-2 rounded text-xs">
-              <div className="flex items-center gap-1 text-blue-700 font-medium mb-1">
-                <Clock className="w-3 h-3" />
-                Next Action
-              </div>
-              <p className="text-blue-600">{application.next_action}</p>
-              {application.next_action_date && (
-                <p className="text-blue-500 mt-1">
-                  Due: {formatDateSafe(application.next_action_date)}
-                </p>
+            <div className="flex flex-col items-end gap-1">
+              <Badge className={getPriorityColor(application.priority)}>
+                {application.priority.toUpperCase()}
+              </Badge>
+              {application.ielts_score && (
+                <span className="text-xs text-blue-600 font-medium">
+                  IELTS: {application.ielts_score}
+                </span>
               )}
             </div>
-          )}
+          </div>
 
-          <div className="flex gap-1 pt-2">
-            <Button size="sm" variant="outline" className="flex-1 h-7 text-xs">
-              <Eye className="w-3 h-3 mr-1" />
-              View
-            </Button>
-            <Button size="sm" variant="outline" className="flex-1 h-7 text-xs">
-              <MessageSquare className="w-3 h-3 mr-1" />
-              Message
-            </Button>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-500">Intake: {application.target_intake}</span>
+              <span className="text-gray-500">{formatDateSafe(application.created_at)}</span>
+            </div>
+
+            {application.progress_percentage > 0 && (
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-600">Progress</span>
+                  <span className="text-gray-600">{application.progress_percentage}%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-1.5">
+                  <div 
+                    className="bg-blue-600 h-1.5 rounded-full transition-all"
+                    style={{ width: `${application.progress_percentage}%` }}
+                  />
+                </div>
+              </div>
+            )}
+
+            {application.next_action && (
+              <div className="bg-blue-50 p-2 rounded text-xs">
+                <div className="flex items-center gap-1 text-blue-700 font-medium mb-1">
+                  <Clock className="w-3 h-3" />
+                  Next Action
+                </div>
+                <p className="text-blue-600">{application.next_action}</p>
+                {application.next_action_date && (
+                  <p className="text-blue-500 mt-1">
+                    Due: {formatDateSafe(application.next_action_date)}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="flex gap-1 pt-2">
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex-1 h-7 text-xs"
+                onClick={() => window.open('https://onlineservices-servicesenligne.cic.gc.ca/eapp/eapp', '_blank')}
+              >
+                <Eye className="w-3 h-3 mr-1" />
+                IRCC Submit
+              </Button>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="flex-1 h-7 text-xs"
+                onClick={() => setShowESignModal(true)}
+              >
+                <FileText className="w-3 h-3 mr-1" />
+                E-sign Documents
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* E-Sign Documents Modal */}
+      {showESignModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-t-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-bold">E-Sign Documents</h3>
+                  <p className="text-blue-100 text-sm mt-1">Student: {application.student_name}</p>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setShowESignModal(false)}
+                  className="text-white hover:bg-white/20"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="p-6">
+              {/* Document Status Overview */}
+              <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="text-center p-3 bg-green-50 rounded-lg border border-green-200">
+                  <div className="text-2xl font-bold text-green-600">3</div>
+                  <div className="text-xs text-green-700">Ready to Sign</div>
+                </div>
+                <div className="text-center p-3 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="text-2xl font-bold text-blue-600">2</div>
+                  <div className="text-xs text-blue-700">Reviewed</div>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="text-2xl font-bold text-gray-600">1</div>
+                  <div className="text-xs text-gray-700">Pending</div>
+                </div>
+              </div>
+
+              {/* Documents List */}
+              <div className="space-y-3 mb-6">
+                <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">IMM 1294E – Study Permit</h4>
+                        <p className="text-sm text-gray-600">Application for Study Permit</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-green-100 text-green-800">Ready</Badge>
+                      <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                        Sign Now
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-blue-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">IMM 5257E – Temporary Resident Visa</h4>
+                        <p className="text-sm text-gray-600">Application for Temporary Resident Visa</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-blue-100 text-blue-800">Reviewed</Badge>
+                      <Button size="sm" variant="outline">
+                        Review
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="border rounded-lg p-4 hover:bg-gray-50 transition-colors cursor-pointer">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-gray-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">IMM 5645E – Family Information</h4>
+                        <p className="text-sm text-gray-600">Additional Family Information</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Badge className="bg-gray-100 text-gray-800">Pending</Badge>
+                      <Button size="sm" variant="outline" disabled>
+                        Waiting
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Signature Section */}
+              <div className="border-t pt-6">
+                <h4 className="font-semibold text-gray-900 mb-4">Digital Signature</h4>
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                      <User className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">RCIC Consultant</p>
+                      <p className="text-sm text-gray-600">Licensed Immigration Consultant</p>
+                    </div>
+                  </div>
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                    <p className="text-gray-500 text-sm">Click to add your digital signature</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowESignModal(false)}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button 
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    // Simulate signing process
+                    setTimeout(() => setShowESignModal(false), 1000);
+                  }}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Sign All Documents
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   )
 }
 
@@ -327,6 +458,7 @@ export default function ApplicationsBoard() {
   const [selectedFilter, setSelectedFilter] = useState('All')
   const [showRequests, setShowRequests] = useState(false)
   const [acceptedRequests, setAcceptedRequests] = useState<number[]>([])
+  const [showNewApplicationModal, setShowNewApplicationModal] = useState(false)
   const { profile } = useStudentProfile()
 
   // Real-time applications from student selections
@@ -387,7 +519,10 @@ export default function ApplicationsBoard() {
                     <Users className="w-4 h-4 mr-2" />
                     Requests ({pendingRequests.length})
                   </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => setShowNewApplicationModal(true)}
+                >
                   <Plus className="w-4 h-4 mr-2" />
                   New Application
                 </Button>
@@ -534,6 +669,50 @@ export default function ApplicationsBoard() {
           )}
         </div>
       </div>
+
+      {/* New Application Modal */}
+      {showNewApplicationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="text-center">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Share Application Link</h3>
+              <p className="text-gray-600 mb-6">
+                Share this link with your student to start their application process:
+              </p>
+              
+              <div className="bg-gray-50 p-4 rounded-lg mb-6">
+                <a 
+                  href="http://localhost:3000" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:text-blue-800 font-medium text-lg"
+                >
+                  visamate.com
+                </a>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setShowNewApplicationModal(false)}
+                  className="flex-1"
+                >
+                  Close
+                </Button>
+                <Button 
+                  onClick={() => {
+                    navigator.clipboard.writeText('http://localhost:3000');
+                    setShowNewApplicationModal(false);
+                  }}
+                  className="flex-1 bg-blue-600 hover:bg-blue-700"
+                >
+                  Copy Link
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 } 
