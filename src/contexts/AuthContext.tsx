@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { cognitoAuth, CognitoUser } from '@/services/cognito-auth';
 
+
 interface AuthContextType {
   user: CognitoUser | null;
   isAuthenticated: boolean;
