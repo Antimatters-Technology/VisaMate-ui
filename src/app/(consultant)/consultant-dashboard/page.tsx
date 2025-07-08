@@ -195,75 +195,75 @@ function ApplicationCard({ application }: { application: ApplicationCard }) {
   const [showESignModal, setShowESignModal] = useState(false)
   return (
     <div className="relative">
-      <Card className="mb-3 cursor-pointer hover:shadow-md transition-shadow">
-        <CardContent className="p-4">
-          <div className="flex items-start justify-between mb-3">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <User className="w-4 h-4 text-gray-500" />
-                <h4 className="font-semibold text-sm">{application.student_name}</h4>
-              </div>
-              <p className="text-xs text-gray-600 mb-2">{application.program}</p>
-              <p className="text-xs text-gray-500">{application.institution}</p>
+    <Card className="mb-3 cursor-pointer hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="flex items-start justify-between mb-3">
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <User className="w-4 h-4 text-gray-500" />
+              <h4 className="font-semibold text-sm">{application.student_name}</h4>
             </div>
-            <div className="flex flex-col items-end gap-1">
-              <Badge className={getPriorityColor(application.priority)}>
-                {application.priority.toUpperCase()}
-              </Badge>
-              {application.ielts_score && (
-                <span className="text-xs text-blue-600 font-medium">
-                  IELTS: {application.ielts_score}
-                </span>
-              )}
-            </div>
+            <p className="text-xs text-gray-600 mb-2">{application.program}</p>
+            <p className="text-xs text-gray-500">{application.institution}</p>
+          </div>
+          <div className="flex flex-col items-end gap-1">
+            <Badge className={getPriorityColor(application.priority)}>
+              {application.priority.toUpperCase()}
+            </Badge>
+            {application.ielts_score && (
+              <span className="text-xs text-blue-600 font-medium">
+                IELTS: {application.ielts_score}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-gray-500">Intake: {application.target_intake}</span>
+            <span className="text-gray-500">{formatDateSafe(application.created_at)}</span>
           </div>
 
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-xs">
-              <span className="text-gray-500">Intake: {application.target_intake}</span>
-              <span className="text-gray-500">{formatDateSafe(application.created_at)}</span>
+          {application.progress_percentage > 0 && (
+            <div className="space-y-1">
+              <div className="flex justify-between text-xs">
+                <span className="text-gray-600">Progress</span>
+                <span className="text-gray-600">{application.progress_percentage}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1.5">
+                <div 
+                  className="bg-blue-600 h-1.5 rounded-full transition-all"
+                  style={{ width: `${application.progress_percentage}%` }}
+                />
+              </div>
             </div>
+          )}
 
-            {application.progress_percentage > 0 && (
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-600">Progress</span>
-                  <span className="text-gray-600">{application.progress_percentage}%</span>
-                </div>
-                <div className="w-full bg-gray-200 rounded-full h-1.5">
-                  <div 
-                    className="bg-blue-600 h-1.5 rounded-full transition-all"
-                    style={{ width: `${application.progress_percentage}%` }}
-                  />
-                </div>
+          {application.next_action && (
+            <div className="bg-blue-50 p-2 rounded text-xs">
+              <div className="flex items-center gap-1 text-blue-700 font-medium mb-1">
+                <Clock className="w-3 h-3" />
+                Next Action
               </div>
-            )}
+              <p className="text-blue-600">{application.next_action}</p>
+              {application.next_action_date && (
+                <p className="text-blue-500 mt-1">
+                  Due: {formatDateSafe(application.next_action_date)}
+                </p>
+              )}
+            </div>
+          )}
 
-            {application.next_action && (
-              <div className="bg-blue-50 p-2 rounded text-xs">
-                <div className="flex items-center gap-1 text-blue-700 font-medium mb-1">
-                  <Clock className="w-3 h-3" />
-                  Next Action
-                </div>
-                <p className="text-blue-600">{application.next_action}</p>
-                {application.next_action_date && (
-                  <p className="text-blue-500 mt-1">
-                    Due: {formatDateSafe(application.next_action_date)}
-                  </p>
-                )}
-              </div>
-            )}
-
-            <div className="flex gap-1 pt-2">
+          <div className="flex gap-1 pt-2">
               <Button 
                 size="sm" 
                 variant="outline" 
                 className="flex-1 h-7 text-xs"
                 onClick={() => window.open('https://onlineservices-servicesenligne.cic.gc.ca/eapp/eapp', '_blank')}
               >
-                <Eye className="w-3 h-3 mr-1" />
+              <Eye className="w-3 h-3 mr-1" />
                 IRCC Submit
-              </Button>
+            </Button>
               <Button 
                 size="sm" 
                 variant="outline" 
@@ -272,11 +272,11 @@ function ApplicationCard({ application }: { application: ApplicationCard }) {
               >
                 <FileText className="w-3 h-3 mr-1" />
                 E-sign Documents
-              </Button>
-            </div>
+            </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+    </Card>
 
       {/* E-Sign Documents Modal */}
       {showESignModal && (
