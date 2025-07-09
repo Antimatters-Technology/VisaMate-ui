@@ -242,18 +242,6 @@ export function RAGChatBot({ className = '' }: RAGChatBotProps) {
                     <span className="text-xs text-gray-500">
                       {formatTimestamp(message.timestamp)}
                     </span>
-                    
-                    {message.confidence_score && (
-                      <Badge className={`text-xs ${getConfidenceColor(message.confidence_score)}`}>
-                        {getConfidenceText(message.confidence_score)}
-                      </Badge>
-                    )}
-                    
-                    {message.processing_time_ms && (
-                      <span className="text-xs text-gray-400">
-                        {message.processing_time_ms}ms
-                      </span>
-                    )}
                   </div>
 
                   {/* Sources */}
@@ -277,12 +265,6 @@ export function RAGChatBot({ className = '' }: RAGChatBotProps) {
                                 {source.title}
                               </a>
                               <p className="text-gray-600 line-clamp-2">{source.snippet}</p>
-                              <div className="flex items-center gap-1 mt-1">
-                                <span className="text-gray-400">Relevance:</span>
-                                <span className="font-medium">
-                                  {Math.round(source.relevance_score * 100)}%
-                                </span>
-                              </div>
                             </div>
                           </div>
                         </div>

@@ -1,20 +1,43 @@
+'use client'
+
 import { Header } from '@/components/layout/Header'
-import { CompletionBanner } from '@/features/documents/CompletionBanner'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/shared/Badge'
+import { Button } from '@/components/ui/button'
+import { MessageCircle } from 'lucide-react'
 
 export default function StatusPage() {
+  const handleWhatsAppNotifications = () => {
+    // Open WhatsApp with pre-filled message for notification setup
+    const phoneNumber = "+1234567890" // Replace with actual support number
+    const message = "Hi! I'd like to set up WhatsApp notifications for my visa application status updates."
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="max-w-4xl mx-auto py-8 px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Application Status
-          </h1>
-          <p className="text-gray-600">
-            Track your visa application progress and next steps.
-          </p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                Application Status
+              </h1>
+              <p className="text-gray-600">
+                Track your visa application progress and next steps.
+              </p>
+            </div>
+            <Button
+              onClick={handleWhatsAppNotifications}
+              className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2"
+              size="lg"
+            >
+              <MessageCircle className="w-5 h-5" />
+              WhatsApp Notifications
+            </Button>
+          </div>
         </div>
 
         {/* Application Status Cards */}
@@ -93,15 +116,47 @@ export default function StatusPage() {
               </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Completion Banner */}
-        <CompletionBanner
-          showWhenEmpty={true}
-          title="Ready to Complete Your Application?"
-          subtitle="Get expert review and validation to ensure your application meets all IRCC requirements."
-          buttonText="Complete Application Review - $149 CAD"
-        />
+          {/* WhatsApp Notifications Info */}
+          <Card className="bg-green-50 border-green-200">
+            <CardHeader>
+              <CardTitle className="text-green-800 flex items-center gap-2">
+                <MessageCircle className="w-5 h-5" />
+                WhatsApp Notifications
+              </CardTitle>
+              <CardDescription className="text-green-700">
+                Stay updated with real-time application status notifications
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-green-700">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  Instant notifications when your application status changes
+                </div>
+                <div className="flex items-center gap-2 text-sm text-green-700">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  Document approval/rejection alerts
+                </div>
+                <div className="flex items-center gap-2 text-sm text-green-700">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  Important deadline reminders
+                </div>
+                <div className="flex items-center gap-2 text-sm text-green-700">
+                  <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                  IRCC submission confirmations
+                </div>
+                <Button
+                  onClick={handleWhatsAppNotifications}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white mt-4"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Enable WhatsApp Notifications
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

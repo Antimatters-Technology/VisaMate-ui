@@ -5,7 +5,7 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
 export async function GET(request: NextRequest) {
   try {
     // Forward request to backend
-    const backendResponse = await fetch(`${BACKEND_URL}/api/v1/rag/health`, {
+    const backendResponse = await fetch(`${BACKEND_URL}/health`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
