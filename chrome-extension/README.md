@@ -1,204 +1,198 @@
-# VisaMate Chrome Extension
+# IRCC Autofill Helper Chrome Extension
 
-A Chrome extension that automatically fills visa application forms using questionnaire answers stored in DynamoDB.
+Automatically fill the IRCC e-application eligibility questionnaire with pre-configured answers. This extension helps streamline the Canadian immigration application process by filling all 32 questions in the eligibility questionnaire.
 
-## Features
+## 🚀 Features
 
-- **Auto-fill forms**: Automatically populates visa portal forms with your questionnaire answers
-- **Smart field mapping**: Intelligently maps questionnaire answers to form fields
-- **Auto-progression**: Automatically clicks "Next" buttons when forms are completed
-- **Real-time progress**: Shows filling progress and status
-- **Multi-portal support**: Works with multiple visa portals (Canada, Australia, UK)
-- **DynamoDB integration**: Fetches answers from your VisaMate wizard session
+- **Automatic Form Filling**: Fills all 32 questions in the IRCC eligibility questionnaire
+- **Pre-configured Answers**: Comes with a complete set of answers for study permit applications
+- **Smart Matching**: Uses intelligent text matching to find form fields
+- **Customizable**: Edit and save your own answers through the popup interface
+- **No Backend Required**: Everything runs locally in your browser
+- **Visual Feedback**: Shows progress and completion status
+- **Persistent Storage**: Your answers are saved and synced across Chrome instances
 
-## Setup
+## 📋 Pre-configured Answers
 
-### 1. Install Dependencies
+The extension comes with answers configured for:
+- **Purpose**: Study in Canada
+- **Duration**: Temporarily – more than 6 months
+- **Country**: India (IND passport)
+- **Study**: Post-secondary designated learning institution
+- **Financial**: Provincial attestation letter, GIC, tuition paid
+- **Language**: IELTS with 6.0+ scores
+- **Medical**: Completed medical exam
+- **And 20+ more questions**
 
-```bash
-cd VisaMate-ui/chrome-extension
-npm install
-```
+## 🛠 Installation
 
-### 2. Build the Extension
+### Method 1: Load Unpacked Extension (Developer Mode)
 
-```bash
-npm run build
-```
+1. **Enable Developer Mode**:
+   - Open Chrome and go to `chrome://extensions/`
+   - Toggle "Developer mode" ON (top right corner)
 
-This creates a `dist/` folder with the compiled extension.
+2. **Load the Extension**:
+   - Click "Load unpacked"
+   - Navigate to and select the `chrome-extension` folder
+   - The extension should appear in your extensions list
 
-### 3. Load in Chrome
+3. **Pin the Extension**:
+   - Click the puzzle piece icon in Chrome toolbar
+   - Find "IRCC Autofill Helper" and click the pin icon
 
-1. Open Chrome and go to `chrome://extensions/`
-2. Enable "Developer mode" (toggle in top right)
-3. Click "Load unpacked" button
-4. Select the `dist/` folder
+### Method 2: Package and Install
 
-## Configuration
+1. **Package the Extension**:
+   - Go to `chrome://extensions/`
+   - Click "Pack extension"
+   - Select the `chrome-extension` folder
+   - This creates a `.crx` file
 
-1. Click the VisaMate extension icon in Chrome toolbar
-2. Click "Show Configuration"
-3. Set your API settings:
-   - **API Base URL**: `http://localhost:8000/api/v1` (for local development)
-   - **Session ID**: Your wizard session ID (or click "New" to create one)
-   - **API Key**: Optional authentication key
+2. **Install the Package**:
+   - Drag the `.crx` file to the extensions page
+   - Click "Add extension" when prompted
 
-## Usage
+## 📖 How to Use
 
-### Automatic Mode
+1. **Navigate to IRCC Site**:
+   ```
+   https://onlineservices-servicesenligne.cic.gc.ca/eapp/eapp
+   ```
 
-1. Navigate to a supported visa portal website
-2. The extension will automatically detect forms and show a helper panel
-3. Enable "Auto-fill" in the helper panel
-4. Click "Fill Current Form" or it will auto-fill when forms load
-5. The extension will automatically click "Next" when forms are completed
+2. **Start the Questionnaire**:
+   - Click "Find out if you're eligible to apply"
+   - Begin answering the eligibility questions
 
-### Manual Mode
+3. **Run the Autofill**:
+   - Click the extension icon in Chrome toolbar
+   - Click "🚀 Start Autofill" button
+   - Watch as all 32 questions get filled automatically
 
-1. Use the popup interface to manually trigger form filling
-2. Monitor progress and status in the helper panel
-3. Manually click next buttons when needed
+4. **Review and Continue**:
+   - Verify the filled answers
+   - Make any necessary adjustments
+   - Continue with your application
 
-## Supported Portals
+## ⚙️ Customization
 
-- **Immigration Canada** (cic.gc.ca)
-- **Australian Immigration** (homeaffairs.gov.au)
-- **UK Visas** (gov.uk)
+### Editing Answers
 
-## Field Mapping
+1. Click the extension icon
+2. Click "⚙️ Settings"
+3. Edit the JSON in the textarea
+4. Click "💾 Save" to store your changes
 
-The extension uses intelligent field mapping to match questionnaire answers to form fields:
+### JSON Format
 
-- **Name matching**: Matches field names, IDs, and labels
-- **Semantic mapping**: Uses predefined mappings for common fields
-- **Context analysis**: Analyzes nearby text and form structure
-
-### Common Field Mappings
-
-| Questionnaire Question | Form Fields |
-|----------------------|-------------|
-| "What would you like to do in Canada?" | `purpose`, `visit_purpose`, `intention` |
-| "What country issued your passport?" | `passport_country`, `citizenship`, `nationality` |
-| "What is your date of birth?" | `birth_date`, `dob`, `date_of_birth` |
-| "What is the name of your institution?" | `institution_name`, `school_name`, `university` |
-
-## Development
-
-### File Structure
-
-```
-chrome-extension/
-├── manifest.json          # Extension manifest
-├── background.js          # Background service worker
-├── content.ts            # Content script (main autofill logic)
-├── popup.tsx             # Popup interface
-├── popup.html            # Popup HTML
-├── content.css           # Content script styles
-├── types.d.ts            # TypeScript declarations
-├── webpack.config.js     # Build configuration
-├── tsconfig.json         # TypeScript configuration
-└── package.json          # Dependencies and scripts
-```
-
-### Build Commands
-
-```bash
-# Development build with watch
-npm run dev
-
-# Production build
-npm run build
-
-# Type checking
-npm run type-check
-
-# Clean build directory
-npm run clean
-```
-
-### Adding New Portals
-
-To add support for a new visa portal:
-
-1. Add portal configuration to `PORTAL_CONFIGS` in `content.ts`
-2. Define field selectors for the portal
-3. Add field mappings for questionnaire questions
-4. Update manifest.json with new host permissions
-
-Example:
-
-```typescript
-'newportal.gov': {
-  name: 'New Portal',
-  selectors: {
-    forms: ['form.application'],
-    inputs: ['input', 'select', 'textarea'],
-    nextButton: ['.next-btn'],
-    errorMessages: ['.error'],
-    submitButton: ['.submit-btn']
-  },
-  fieldMappings: {
-    'What country issued your passport?': ['passport_country'],
-    // ... more mappings
-  },
-  autoFillEnabled: true
+```json
+{
+  "What would you like to do in Canada?": "Study",
+  "How long are you planning to stay in Canada?": "Temporarily – more than 6 months",
+  "Select the code that matches the one on your passport.": "IND (India)",
+  ...
 }
 ```
 
-## API Integration
+**Important**: 
+- Question keys must match exactly with the form text
+- Answer values must match the dropdown options exactly
+- Use proper JSON syntax (quotes around strings, commas between items)
 
-The extension communicates with the VisaMate API to:
+### Resetting to Defaults
 
-- Fetch questionnaire answers from DynamoDB
-- Create new wizard sessions
-- Sync data automatically
+1. Open the extension popup
+2. Click "⚙️ Settings"
+3. Click "🔄 Reset"
+4. Confirm to restore original answers
 
-### API Endpoints Used
+## 🔧 Technical Details
 
-- `GET /wizard/questionnaire/{sessionId}/answers` - Fetch answers
-- `POST /wizard/create-session` - Create new session
+### File Structure
+```
+chrome-extension/
+├── manifest.json          # Extension configuration
+├── background.js          # Service worker
+├── content.js            # Form filling logic
+├── popup.html            # User interface
+├── popup.js              # UI interactions
+├── answers.json          # Default answers
+└── icons/                # Extension icons
+```
 
-## Troubleshooting
+### How It Works
+
+1. **Content Script**: Runs on IRCC pages, watches for form elements
+2. **Background Worker**: Manages extension lifecycle and storage
+3. **Smart Matching**: Finds form fields by matching question text
+4. **Event Simulation**: Triggers proper form events for compatibility
+5. **Storage Sync**: Saves answers to Chrome sync storage
+
+### Permissions Used
+
+- `storage`: Save and sync your answers
+- `scripting`: Inject autofill script into pages
+- `activeTab`: Access current tab information
+- `host_permissions`: Access IRCC website
+
+## 🐛 Troubleshooting
+
+### Extension Not Working?
+
+1. **Check the Site**: Make sure you're on the correct IRCC URL
+2. **Reload Extension**: Go to `chrome://extensions/` and click reload
+3. **Check Console**: Open DevTools and look for error messages
+4. **Verify Answers**: Ensure your JSON is valid in settings
+
+### Fields Not Filling?
+
+1. **Question Text Changed**: IRCC may have updated question wording
+2. **Form Structure Changed**: Page layout may have been modified
+3. **Timing Issues**: Try clicking autofill again after page loads
+4. **Manual Override**: Fill remaining fields manually
 
 ### Common Issues
 
-1. **Forms not filling**: Check if portal is supported and session ID is configured
-2. **Field mapping issues**: Review field mappings in console logs
-3. **API connection errors**: Verify API URL and network connectivity
-4. **Permission errors**: Ensure extension has necessary permissions
+- **"Please navigate to IRCC site first"**: You're not on the correct page
+- **"No fields were filled"**: Questions may not match stored answers
+- **JSON Parse Error**: Check your JSON syntax in settings
 
-### Debug Mode
+## 🔒 Privacy & Security
 
-1. Open Chrome DevTools (F12)
-2. Check Console tab for extension logs
-3. Look for "VisaMate:" prefixed messages
-4. Monitor network requests to API
+- **No Data Collection**: Extension doesn't send data anywhere
+- **Local Storage Only**: All data stays on your device
+- **No Network Requests**: Except to the IRCC site you're already using
+- **Chrome Sync**: Uses Chrome's built-in sync (optional)
 
-### Reset Extension
+## 📝 Supported Questions
 
-1. Go to `chrome://extensions/`
-2. Find VisaMate Assistant
-3. Click "Remove" and reload the unpacked extension
+The extension handles these question types:
+- Dropdown selections (select elements)
+- Text inputs (name, dates)
+- Radio buttons (Yes/No questions)
+- Checkboxes (multiple choice)
 
-## Security
+## 🆔 Version History
 
-- Extension only runs on whitelisted visa portal domains
-- API communication uses HTTPS in production
-- No sensitive data stored locally beyond session cache
-- User controls when autofill is enabled
+- **v1.0.0**: Initial release with 32 pre-configured questions
+- Support for study permit applications
+- Smart field matching and form filling
+- User-friendly popup interface
 
-## Contributing
+## 📞 Support
 
-1. Make changes to source files
-2. Test with `npm run dev`
-3. Build with `npm run build`
-4. Test in Chrome with built extension
+If you encounter issues:
+1. Check this README for troubleshooting steps
+2. Verify you're using the latest version
+3. Test with default settings (reset button)
+4. Check browser console for error messages
 
-## Support
+## ⚖️ Legal Notice
 
-For issues or questions:
-1. Check browser console for error messages
-2. Verify API connectivity
-3. Ensure portal website is supported
-4. Contact VisaMate support team 
+This extension is designed to help fill forms more efficiently. Users are responsible for:
+- Verifying all filled information is accurate
+- Ensuring compliance with IRCC requirements
+- Reviewing answers before submission
+- Following all applicable immigration laws
+
+**Disclaimer**: This is an unofficial tool not affiliated with IRCC or the Government of Canada. 
