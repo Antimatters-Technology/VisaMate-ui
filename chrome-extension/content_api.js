@@ -1,77 +1,94 @@
-// Content script for IRCC Autofill Helper - Simple Version
-console.log('IRCC Autofill Helper (Simple) loaded');
+// Content script for IRCC Autofill Helper with API Integration
+console.log('IRCC Autofill Helper with API Integration loaded');
 
 let answers = {};
 let isAutofilling = false;
+let apiBaseUrl = 'http://localhost:8000'; // Change this to your server URL
 
-// Load answers from local JSON file
-async function loadAnswersFromFile() {
+// API Configuration
+const API_CONFIG = {
+    baseUrl: apiBaseUrl,
+    endpoints: {
+        answers: '/api/questionnaire/answers',
+        health: '/health'
+    }
+};
+
+// Load answers from API
+async function loadAnswersFromAPI(studentId = 'default') {
     try {
-        console.log('🔄 Loading answers from local JSON file...');
+        console.log('🔄 Fetching answers from API...');
         
-        const response = await fetch(chrome.runtime.getURL('answers.json'));
-        const data = await response.json();
-        
-        // Convert the answers format to match the expected structure
-        answers = {};
-        for (const answer of data.answers) {
-            const questionNumber = answer.question_number;
-            const answerText = answer.answer;
-            
-            // Map question numbers to actual questions
-            const questionMapping = {
-                1: "What would you like to do in Canada?",
-                2: "How long are you planning to stay in Canada?",
-                3: "Select the code that matches the one on your passport.",
-                4: "What is your current country or territory of residence? If you are presently in Canada, you should select Canada.",
-                5: "Do you have a family member who is a Canadian citizen or permanent resident and is 18 years or older?",
-                6: "What is your date of birth?",
-                7: "Do you have a provincial or territorial attestation letter or meet an exception from submitting a provincial or territorial attestation letter?",
-                8: "Which province or territory is your provincial attestation letter from?",
-                9: "Are you a lawful permanent resident of the United States with a valid U.S. Citizenship and Immigration Services (USCIS) number?",
-                10: "Have you travelled directly to Canada from the United States or St. Pierre and Miquelon or will you be traveling directly to Canada from the United States or St. Pierre and Miquelon?",
-                11: "Have you been accepted to a designated learning institution?",
-                12: "Are you planning to attend a post-secondary designated learning institution?",
-                13: "What is your marital status ?",
-                14: "What is your province or territory of destination? If visiting multiple provinces or territories, select the one in which you will be spending most of your time.",
-                15: "Are you currently, or will you be living in Canada with a parent or legal guardian for the entire period of your stay?",
-                16: "Do you have an SDS eligible GIC?",
-                17: "Did you pay your first year's tuition in full?",
-                18: "Have you taken a language test in the past 2 years?",
-                19: "Were all your results for listening, reading, writing and speaking on the International English Language Testing System (IELTS) a 6.0 or higher?",
-                20: "Do you have a valid work permit or study permit, and need a visa to return to Canada?",
-                21: "Are you an exchange student ?",
-                22: "Is work an essential component of your studies?",
-                23: "Are you a spouse, common-law partner or child of certain skilled worker or of certain full time international student that has or will have status in Canada?",
-                24: "Are you:\n-  A recipient of a Commonwealth scholarship; or\n-  A recipient of a full bursary (covering all expenses) from the Canadian International Development Agency (CIDA), including Francophonie scholarships; or\n-  A participant in a Canadian aid program for developing countries?",
-                25: "Are you accompanying a family member that has status in Canada, or has recently been approved to come to Canada?",
-                26: "Have you ever committed, been arrested for, been charged with, or convicted of any criminal offence in any country?",
-                27: "Do you want to submit an application for a family member?",
-                28: "Are you giving someone access to your application?",
-                29: "In the past 10 years, have you given your fingerprints and photo (biometrics) for an application to come to Canada?",
-                30: "There are fees associated with this application. Will you be paying your fees or are you fee exempt?",
-                31: "Are you able to make a digital copy of your documents with a scanner or camera?",
-                32: "Will you be paying your application fees online?  To pay online, you can use a credit card (Visa, MasterCard, American Express, JCB, China Union Pay) or a Visa Debit or Debit MasterCard."
-            };
-            
-            if (questionNumber in questionMapping) {
-                const questionText = questionMapping[questionNumber];
-                answers[questionText] = answerText;
+        const response = await fetch(`${API_CONFIG.baseUrl}/api/questionnaire/answers/${studentId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
             }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         
-        console.log('✅ Answers loaded from file:', Object.keys(answers).length, 'questions');
+        const data = await response.json();
+        answers = data.answers;
+        
+        console.log('✅ Answers loaded from API:', Object.keys(answers).length, 'questions');
         return true;
     } catch (error) {
-        console.error('❌ Failed to load answers from file:', error);
+        console.error('❌ Failed to load answers from API:', error);
+        
+        // Fallback to local storage
+        console.log('🔄 Falling back to local storage...');
+        return await loadAnswersFromStorage();
+    }
+}
+
+// Load answers from Chrome storage (fallback)
+async function loadAnswersFromStorage() {
+    try {
+        const result = await chrome.storage.sync.get('answers');
+        if (result.answers) {
+            answers = result.answers;
+            console.log('✅ Answers loaded from storage:', Object.keys(answers).length, 'questions');
+            return true;
+        } else {
+            console.warn('⚠️ No answers found in storage');
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Failed to load answers from storage:', error);
+        return false;
+    }
+}
+
+// Check API health
+async function checkAPIHealth() {
+    try {
+        const response = await fetch(`${API_CONFIG.baseUrl}/health`);
+        if (response.ok) {
+            const data = await response.json();
+            console.log('✅ API Health Check:', data);
+            return true;
+        }
+    } catch (error) {
+        console.warn('⚠️ API Health Check failed:', error);
         return false;
     }
 }
 
 // Initialize
 async function initialize() {
-    console.log('🚀 Initializing IRCC Autofill Helper (Simple)...');
-    await loadAnswersFromFile();
+    console.log('🚀 Initializing IRCC Autofill Helper...');
+    
+    // Check API health first
+    const apiHealthy = await checkAPIHealth();
+    
+    if (apiHealthy) {
+        await loadAnswersFromAPI();
+    } else {
+        await loadAnswersFromStorage();
+    }
 }
 
 // Listen for autofill trigger from background script

@@ -91,22 +91,38 @@ export function usePresign() {
         fileType: file.type
       })
 
-      const uploadResponse = await fetch(upload_url, {
-        method: 'PUT',
-        headers: headers,
-        body: file, // Upload file directly, not as FormData
-      })
+      // Create AbortController for timeout handling
+      const controller = new AbortController()
+      const timeoutId = setTimeout(() => controller.abort(), 120000) // 2 minutes timeout
 
-      if (!uploadResponse.ok) {
-        const errorText = await uploadResponse.text().catch(() => 'No error details')
-        console.error('S3 upload failed:', {
-          status: uploadResponse.status,
-          statusText: uploadResponse.statusText,
-          url: upload_url,
+      let uploadResponse: Response
+      try {
+        uploadResponse = await fetch(upload_url, {
+          method: 'PUT',
           headers: headers,
-          errorText: errorText
+          body: file, // Upload file directly, not as FormData
+          signal: controller.signal
         })
-        throw new Error(`S3 upload failed: ${uploadResponse.status} ${uploadResponse.statusText}. Details: ${errorText}`)
+
+        clearTimeout(timeoutId)
+
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text().catch(() => 'No error details')
+          console.error('S3 upload failed:', {
+            status: uploadResponse.status,
+            statusText: uploadResponse.statusText,
+            url: upload_url,
+            headers: headers,
+            errorText: errorText
+          })
+          throw new Error(`S3 upload failed: ${uploadResponse.status} ${uploadResponse.statusText}. Details: ${errorText}`)
+        }
+      } catch (error: any) {
+        clearTimeout(timeoutId)
+        if (error.name === 'AbortError') {
+          throw new Error('Upload timed out after 2 minutes. Please try again with a smaller file or check your internet connection.')
+        }
+        throw error
       }
 
       console.log('S3 upload successful, marking as complete...')

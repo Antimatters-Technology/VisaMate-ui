@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "IRCC Autofill Helper",
+  "name": "IRCC Autofill Helper with API",
   "version": "2.0.0",
-  "description": "Automatically fills IRCC e-application forms with pre-configured answers",
+  "description": "Automatically fills IRCC e-application forms with answers from API server",
   "action": {
     "default_popup": "popup.html"
   },
@@ -12,7 +12,8 @@
     "activeTab"
   ],
   "host_permissions": [
-    "https://onlineservices-servicesenligne.cic.gc.ca/*"
+    "https://onlineservices-servicesenligne.cic.gc.ca/*",
+    "http://localhost:8000/*"
   ],
   "background": {
     "service_worker": "background.js"
@@ -20,7 +21,7 @@
   "content_scripts": [
     {
       "matches": ["https://onlineservices-servicesenligne.cic.gc.ca/*"],
-      "js": ["content.js"],
+      "js": ["content_api.js"],
       "run_at": "document_end"
     }
   ],
