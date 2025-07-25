@@ -1,9 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
-import { WSProvider } from '@/libs/ws'
-import { Toaster } from '@/components/ui/toaster'
-import { I18nProvider } from '@/libs/i18n'
+import { ClientProviders } from '@/components/providers/ClientProviders'
+import { WorkflowStatus } from '@/components/shared/WorkflowStatus'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,14 +20,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <I18nProvider>
-          <WSProvider>
-            <div className="min-h-screen bg-background">
-              {children}
-            </div>
-            <Toaster />
-          </WSProvider>
-        </I18nProvider>
+        <ClientProviders>
+          <div className="min-h-screen bg-background">
+            {children}
+            <WorkflowStatus />
+          </div>
+        </ClientProviders>
       </body>
     </html>
   )

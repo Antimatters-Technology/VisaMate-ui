@@ -1,49 +1,33 @@
 {
   "manifest_version": 3,
-  "name": "VisaMate Assistant",
-  "version": "1.0.0",
-  "description": "Your AI-powered visa application companion",
+  "name": "IRCC Autofill Helper",
+  "version": "2.0.0",
+  "description": "Automatically fills IRCC e-application forms with pre-configured answers",
+  "action": {
+    "default_popup": "popup.html"
+  },
   "permissions": [
-    "activeTab",
     "storage",
-    "scripting"
+    "scripting",
+    "activeTab"
   ],
   "host_permissions": [
-    "https://*.cic.gc.ca/*",
-    "https://*.homeaffairs.gov.au/*",
-    "https://*.gov.uk/*"
+    "https://onlineservices-servicesenligne.cic.gc.ca/*"
   ],
-  "action": {
-    "default_popup": "popup.html",
-    "default_title": "VisaMate Assistant",
-    "default_icon": {
-      "16": "icons/icon16.png",
-      "32": "icons/icon32.png",
-      "48": "icons/icon48.png",
-      "128": "icons/icon128.png"
-    }
+  "background": {
+    "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://*.cic.gc.ca/*",
-        "https://*.homeaffairs.gov.au/*",
-        "https://*.gov.uk/*"
-      ],
+      "matches": ["https://onlineservices-servicesenligne.cic.gc.ca/*"],
       "js": ["content.js"],
-      "css": ["content.css"]
+      "run_at": "document_end"
     }
   ],
-  "icons": {
-    "16": "icons/icon16.png",
-    "32": "icons/icon32.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  },
   "web_accessible_resources": [
     {
-      "resources": ["helper-panel.html"],
-      "matches": ["<all_urls>"]
+      "resources": ["answers.json"],
+      "matches": ["https://onlineservices-servicesenligne.cic.gc.ca/*"]
     }
   ]
 } 

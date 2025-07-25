@@ -1,6 +1,9 @@
+'use client'
+
 import React from 'react'
 import { Badge } from '@/components/shared/Badge'
 import { Button } from '@/components/ui/button'
+import { formatDateSafe } from '@/utils/date'
 
 interface Case {
   id: string
@@ -88,10 +91,10 @@ export function CasesTable() {
               <td className="p-4">{case_.country}</td>
               <td className="p-4">{getStatusBadge(case_.status)}</td>
               <td className="p-4 text-sm text-gray-600">
-                {new Date(case_.createdAt).toLocaleDateString()}
+                {formatDateSafe(case_.createdAt)}
               </td>
               <td className="p-4 text-sm text-gray-600">
-                {new Date(case_.lastUpdate).toLocaleDateString()}
+                {formatDateSafe(case_.lastUpdate)}
               </td>
               <td className="p-4">
                 <div className="flex gap-2">

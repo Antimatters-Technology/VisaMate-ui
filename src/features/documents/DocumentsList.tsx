@@ -1,7 +1,10 @@
+'use client'
+
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/shared/Badge'
 import { useDocuments } from '@/stores/documents'
+import { formatDateSafe } from '@/utils/date'
 
 interface Document {
   id: string
@@ -51,40 +54,11 @@ export function DocumentsList() {
   return (
     <div className="space-y-3">
       {documents.map((doc) => (
-        <div key={doc.id} className="flex items-center justify-between p-3 border rounded-lg">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <p className="text-sm font-medium truncate">{doc.name}</p>
-              {getStatusBadge(doc.status)}
-            </div>
-            <div className="flex items-center gap-4 text-xs text-gray-500">
-              <span>{doc.type.toUpperCase()}</span>
-              <span>{formatFileSize(doc.size)}</span>
-              <span>
-                {new Date(doc.uploadedAt).toLocaleDateString()}
-              </span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-2 ml-4">
-            {doc.status === 'completed' && doc.url && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => window.open(doc.url, '_blank')}
-              >
-                View
-              </Button>
-            )}
-            <Button 
-              variant="ghost" 
-              size="sm"
-              onClick={() => removeDocument(doc.id)}
-              className="text-red-600 hover:text-red-700"
-            >
-              Remove
-            </Button>
-          </div>
+        <div key={doc.id} className="flex items-center justify-between p-2 border rounded-md">
+          <p className="text-sm font-medium truncate max-w-[150px]" title={doc.name}>
+            {doc.name}
+          </p>
+          {getStatusBadge(doc.status)}
         </div>
       ))}
     </div>

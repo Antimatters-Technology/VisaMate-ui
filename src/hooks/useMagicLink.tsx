@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { api, apiHelpers } from '@/libs/api'
@@ -85,7 +87,7 @@ export function MagicLinkHandler({ token }: MagicLinkHandlerProps) {
           if (userRole === 'consultant') {
             router.push('/cases')
           } else {
-            router.push('/wizard')
+            router.push('/documents')
           }
         }, 2000)
       } else {

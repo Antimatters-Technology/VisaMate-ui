@@ -1,3 +1,5 @@
+'use client'
+
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import ReconnectingWebSocket from 'reconnecting-websocket'
 
@@ -26,6 +28,14 @@ export function WSProvider({ children }: WSProviderProps) {
   const subscribersRef = useRef<Map<string, Set<(payload: any) => void>>>(new Map())
 
   useEffect(() => {
+    // Skip WebSocket connection for Phase 1 - only needed for real-time features
+    const ENABLE_WEBSOCKET = process.env.NEXT_PUBLIC_ENABLE_WEBSOCKET === 'true'
+    
+    if (!ENABLE_WEBSOCKET) {
+      console.log('WebSocket disabled - Enable with NEXT_PUBLIC_ENABLE_WEBSOCKET=true')
+      return
+    }
+    
     const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8000/ws'
     
     const ws = new ReconnectingWebSocket(WS_URL, [], {

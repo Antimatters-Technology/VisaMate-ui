@@ -12,6 +12,18 @@ export function formatDate(date: string | Date, pattern: string = 'MMM dd, yyyy'
   }
 }
 
+// Hydration-safe date formatting that works consistently on server and client
+export function formatDateSafe(date: string | Date): string {
+  try {
+    const dateObj = typeof date === 'string' ? parseISO(date) : date
+    if (!isValid(dateObj)) return 'Invalid date'
+    // Use consistent ISO format that works the same on server and client
+    return format(dateObj, 'MMM dd, yyyy')
+  } catch {
+    return 'Invalid date'
+  }
+}
+
 export function formatRelativeDate(date: string | Date): string {
   try {
     const dateObj = typeof date === 'string' ? parseISO(date) : date
